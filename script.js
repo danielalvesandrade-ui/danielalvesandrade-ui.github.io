@@ -64,7 +64,10 @@ function calcularValores(bruto) {
     let aIr = 0, pIr = 0;
     if (bFinalI <= 2428.80) { aIr = 0; pIr = 0; } else if (bFinalI <= 2826.65) { aIr = 0.075; pIr = 182.16; } else if (bFinalI <= 3751.05) { aIr = 0.15; pIr = 394.16; } else if (bFinalI <= 4664.68) { aIr = 0.225; pIr = 675.49; } else { aIr = 0.275; pIr = 908.73; }
     const irParc = Math.max(0, (bFinalI * aIr) - pIr);
-    let red = (bruto <= 5000) ? 312.89 : (bruto <= 7350) ? 978.62 - (0.133145 * bruto) : 0;
+    
+    // CORREÇÃO: Utilizando bCalcIrrf (Bruto - Isenções IRRF) para determinar a faixa de redução
+    let red = (bCalcIrrf <= 5000) ? 312.89 : (bCalcIrrf <= 7350) ? 978.62 - (0.133145 * bCalcIrrf) : 0;
+    
     const redE = Math.min(irParc, Math.max(0, red));
     return { vInss, vIrrf: irParc - redE, bInss, aI, dI, bCalcIrrf, dLegal, dUtil, bFinalI, aIr, pIr, redE, redC: red, pensao, outros, nDep, sIrrf, irParc };
 }
@@ -77,7 +80,7 @@ function calcular() {
     document.getElementById('resBaseIrrf').innerText = "R$ " + formatar(r.bFinalI);
     document.getElementById('resDedUtil').innerText = "R$ " + formatar(r.dUtil);
     document.getElementById('resAliqIrrf').innerText = (r.aIr * 100).toFixed(1) + "%";
-    document.getElementById('resBaseRed').innerText = "R$ " + formatar(b);
+    document.getElementById('resBaseRed').innerText = "R$ " + formatar(r.bCalcIrrf); // Atualizado para mostrar a base correta no card
     document.getElementById('resValRed').innerText = "R$ " + formatar(r.redE);
     document.getElementById('resValorIrrf').innerText = "R$ " + formatar(r.vIrrf);
     document.getElementById('resSalBase').innerText = "R$ " + formatar(b);
@@ -115,12 +118,12 @@ function calcular() {
     document.getElementById('irF1').innerText = formatar(r.bFinalI); document.getElementById('irF2').innerText = (r.aIr * 100).toFixed(1) + "%"; document.getElementById('irF3').innerText = formatar(r.irParc + r.pIr);
     document.getElementById('irD1').innerText = formatar(r.irParc + r.pIr); document.getElementById('irD2').innerText = formatar(r.pIr); document.getElementById('irD3').innerText = formatar(r.irParc);
     
-    // ATUALIZAÇÃO DO 6º PASSO - REDUÇÃO ADICIONAL 2026
+    // ATUALIZAÇÃO DO 6º PASSO - REDUÇÃO ADICIONAL 2026 (Refletindo a correção na memória de cálculo)
     const txtRed = document.getElementById('txtRegraReducao');
-    if (b <= 5000) {
+    if (r.bCalcIrrf <= 5000) {
         txtRed.innerText = "Quando for até 5.000,00: o valor da redução é apenas para zerar o IRRF.";
-    } else if (b <= 7350) {
-        txtRed.innerHTML = `Condição de 5.000,01 a 7.350,00: <br> 978,62 - (0,133145 × Base Cálculo: ${formatar(b)}) = ${formatar(r.redC)}`;
+    } else if (r.bCalcIrrf <= 7350) {
+        txtRed.innerHTML = `Condição de 5.000,01 a 7.350,00: <br> 978,62 - (0,133145 × Base Cálculo: ${formatar(r.bCalcIrrf)}) = ${formatar(r.redC)}`;
     } else {
         txtRed.innerText = "Acima de 7.350,01: a partir deste valor não tem redução adicional.";
     }
