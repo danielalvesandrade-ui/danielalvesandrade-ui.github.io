@@ -3,41 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Moderna</title>
+    <title>Simulador de Alíquotas 2026</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div class="calculator">
-        <div class="display">
-            <input type="text" id="result" disabled>
+    <div class="container">
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="title-wrapper">
+                    <h1>Simulador de Alíquotas <span class="badge-year">2026</span></h1>
+                    <p class="subtitle">Fator Sistemas & Consultoria</p>
+                </div>
+            </div>
+            <div class="header-buttons">
+                <button id="btnExplica" onclick="alternarTela()">Explicação do Cálculo</button>
+                <button id="btnReverso" onclick="abrirModalReverso()">Cálculo Reverso</button>
+            </div>
         </div>
-        <div class="buttons">
-            <button onclick="clearDisplay()" class="control">C</button>
-            <button onclick="deleteLast()" class="control">DEL</button>
-            <button onclick="appendToDisplay('/')" class="operator">÷</button>
-            <button onclick="appendToDisplay('*')" class="operator">×</button>
+
+        <div class="input-section">
+            <div class="input-row">
+                <div class="input-group"><label>💰 Salário Bruto</label><input type="number" id="brutoInss" placeholder="0.00" step="0.01"></div>
+                <div class="input-group"><label>🚫 S/ Incid. INSS</label><input type="number" id="semIncidenciaInss" placeholder="0.00" step="0.01"></div>
+                <div class="input-group"><label>👥 Dep.</label><input type="number" id="dependentes" placeholder="0" step="1"></div>
+                <div class="input-group"><label>⚖️ Pensão (R$)</label><input type="number" id="pensaoAlimenticia" placeholder="0.00" step="0.01"></div>
+                <div class="input-group"><label>📉 S/ Incid. IRRF</label><input type="number" id="semIncidenciaIrrf" placeholder="0.00" step="0.01"></div>
+                <div class="input-group"><label>💸 Outros Desc.</label><input type="number" id="outrosDescontos" placeholder="0.00" step="0.01"></div>
+            </div>
+        </div>
+
+        <div id="painelResumo" class="main-content grid-3">
+            <div class="card card-red">
+                <h3>INSS</h3>
+                <div class="info-line"><span>Base de Cálculo:</span> <strong id="resBaseInss">R$ 0,00</strong></div>
+                <div class="info-line"><span>Alíquota INSS:</span> <strong id="resAliqInss">0,0%</strong></div>
+                <div class="info-line destaque-v">Valor Desconto: <span id="resValorInss">R$ 0,00</span></div>
+                <button id="btnContribuinte" class="btn-contribuinte" onclick="toggleContribuinte()">Contribuinte Individual</button>
+            </div>
             
-            <button onclick="appendToDisplay('7')">7</button>
-            <button onclick="appendToDisplay('8')">8</button>
-            <button onclick="appendToDisplay('9')">9</button>
-            <button onclick="appendToDisplay('-')" class="operator">-</button>
-            
-            <button onclick="appendToDisplay('4')">4</button>
-            <button onclick="appendToDisplay('5')">5</button>
-            <button onclick="appendToDisplay('6')">6</button>
-            <button onclick="appendToDisplay('+')" class="operator">+</button>
-            
-            <button onclick="appendToDisplay('1')">1</button>
-            <button onclick="appendToDisplay('2')">2</button>
-            <button onclick="appendToDisplay('3')">3</button>
-            <button id="equal" onclick="calculate()">=</button>
-            
-            <button onclick="appendToDisplay('0')" class="zero">0</button>
-            <button onclick="appendToDisplay('.')">.</button>
+            <div class="card card-red">
+                <h3>IRRF</h3>
+                <div class="info-line"><span>Base de Cálculo:</span> <strong id="resBaseIrrf">R$ 0,00</strong></div>
+                <div class="info-line"><span>Dedução:</span> <strong id="resDedUtil">-</strong></div>
+                <div class="info-line"><span>Alíquota:</span> <strong id="resAliqIrrf">-</strong></div>
+                <div class="info-line"><span>Base Redução:</span> <strong id="resBaseRed">R$ 0,00</strong></div>
+                <div class="info-line"><span>Valor Redução:</span> <strong id="resValRed">R$ 0,00</strong></div>
+                <div class="info-line destaque-v">Valor Desconto: <span id="resValorIrrf">R$ 0,00</span></div>
+                <p class="nota">* Diferença de R$ 0,01 pode ocorrer vs Receita.</p>
+            </div>
+
+            <div class="card card-white">
+                <h3>RESUMO</h3>
+                <div class="info-line"><span>Salário Base:</span> <strong id="resSalBase">R$ 0,00</strong></div>
+                <div class="info-line"><span>INSS:</span> <strong id="resInssFinal">R$ 0,00</strong></div>
+                <div class="info-line"><span>IRRF:</span> <strong id="resIrrfFinal">R$ 0,00</strong></div>
+                <div class="info-line"><span>Pensão:</span> <strong id="resPensaoFinal">R$ 0,00</strong></div>
+                <div class="info-line"><span>Outros Descontos:</span> <strong id="resOutrosFinal">R$ 0,00</strong></div>
+                <div class="box-liquido">
+                    <span style="font-size: 0.75rem; color: #888; text-transform: uppercase;">Salário Líquido</span>
+                    <h2 id="fLiquido">R$ 0,00</h2>
+                </div>
+            </div>
+        </div>
+
+        <div id="painelMemoria" class="main-content grid-2" style="display: none;">
+            <div class="col-explica">
+                <h3 class="title-memoria">MEMÓRIA DE CÁLCULO - INSS</h3>
+                <div class="passo"><span class="p-num">1º Passo</span><div class="p-txt"><strong>Base de Cálculo:</strong><p class="p-sub">Bruto (<span id="m1">0,00</span>) - Isenções (<span id="m2">0,00</span>)</p><span class="p-label">Resultado:</span><div class="p-valor">R$ <span id="m3">0,00</span></div></div></div>
+                <div id="passoCltInss"><div class="passo"><span class="p-num">2º Passo</span><div class="p-txt"><strong>Aplicação da Faixa:</strong><p class="p-sub">Base (<span id="m4">0,00</span>) × Alíquota (<span id="m5">0%</span>)</p><span class="p-label">Resultado Parcial:</span><div class="p-valor">R$ <span id="m6">0,00</span></div></div></div><div class="passo"><span class="p-num">3º Passo</span><div class="p-txt"><strong>Dedução da Parcela:</strong><p class="p-sub">Parcial (<span id="m7">0,00</span>) - Parcela (<span id="m8">0,00</span>)</p><span class="p-label">Resultado Final:</span><div class="p-valor">R$ <span id="m9">0,00</span></div></div></div></div>
+                <div id="passoIndividualInss" style="display:none"><div class="passo"><span class="p-num">2º Passo</span><div class="p-txt"><strong>Cálculo Autônomo (11%):</strong><p class="p-sub">Base (<span id="mi1">0,00</span>) × 11%</p><span class="p-label">Resultado:</span><div class="p-valor">R$ <span id="mi2">0,00</span></div></div></div></div>
+                <div class="passo final-box"><span class="p-num">4º Passo</span><div class="p-txt"><strong>Valor Final INSS:</strong><div class="p-valor-grande">R$ <span id="mFinalInss">0,00</span></div></div></div>
+                <div class="tabela-container">
+                    <h3 class="tabela-titulo">Tabela Progressiva INSS 2026</h3>
+                    <table class="tabela-limpa">
+                        <thead><tr><th>Faixa</th><th style="text-align: center;">Alíq.</th><th style="text-align: right;">Dedução</th></tr></thead>
+                        <tbody>
+                            <tr id="f1"><td>Até R$ 1.621,00</td><td style="text-align: center;">7,5%</td><td style="text-align: right;">R$ 0,00</td></tr>
+                            <tr id="f2"><td>R$ 1.621,01 a R$ 2.902,84</td><td style="text-align: center;">9,0%</td><td style="text-align: right;">R$ 24,32</td></tr>
+                            <tr id="f3"><td>R$ 2.902,85 a R$ 4.354,27</td><td style="text-align: center;">12,0%</td><td style="text-align: right;">R$ 111,41</td></tr>
+                            <tr id="f4"><td>Acima de R$ 4.354,27</td><td style="text-align: center;">14,0%</td><td style="text-align: right;">R$ 198,49</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-explica">
+                <h3 class="title-memoria">MEMÓRIA DE CÁLCULO - IRRF</h3>
+                <div class="passo"><span class="p-num">1º Passo</span><div class="p-txt"><strong>Base de Cálculo:</strong><p class="p-sub">Bruto (<span id="ir1">0,00</span>) - S/ Incid IRRF (<span id="ir2">0,00</span>)</p><span class="p-label">Resultado:</span><div class="p-valor">R$ <span id="ir3">0,00</span></div></div></div>
+                <div class="passo"><span class="p-num">2º Passo</span><div class="p-txt"><strong>Dedução (Análise de Vantagem):</strong><p class="p-sub">Simplificada:</p><p class="p-destaque-branco">R$ 607,20</p><p class="p-sub">Legal: INSS (<span id="irL1">0,00</span>) + Dep (<span id="irL2">0,00</span>) + Pensão (<span id="irL3">0,00</span>) =</p><p class="p-destaque-branco">R$ <span id="irL4">0,00</span></p><span class="p-label">Dedução Utilizada:</span><div class="p-valor">R$ <span id="irDedUtilExp">0,00</span></div></div></div>
+                <div class="passo"><span class="p-num">3º Passo</span><div class="p-txt"><strong>Base IRRF:</strong><p class="p-sub">Base Cálculo (<span id="irB1">0,00</span>) - Dedução Utilizada (<span id="irB2">0,00</span>)</p><span class="p-label">Resultado:</span><div class="p-valor">R$ <span id="irB3">0,00</span></div></div></div>
+                <div class="passo"><span class="p-num">4º Passo</span><div class="p-txt"><strong>Faixa IRRF:</strong><p class="p-sub">Base IRRF (<span id="irF1">0,00</span>) × Alíquota (<span id="irF2">0%</span>)</p><span class="p-label">Resultado Parcial:</span><div class="p-valor">R$ <span id="irF3">0,00</span></div></div></div>
+                <div class="passo"><span class="p-num">5º Passo</span><div class="p-txt"><strong>Dedução da Faixa:</strong><p class="p-sub">Parcial (<span id="irD1">0,00</span>) - Parcela Faixa (<span id="irD2">0,00</span>)</p><span class="p-label">Resultado:</span><div class="p-valor">R$ <span id="irD3">0,00</span></div></div></div>
+                <div class="passo"><span class="p-num">6º Passo</span><div class="p-txt"><strong>Redução Adicional 2026:</strong><div id="areaReducao"><p class="p-sub" id="txtRegraReducao"></p></div><span class="p-label">Valor Redução:</span><div class="p-valor">R$ <span id="redFinal">0,00</span></div></div></div>
+                <div class="passo final-box"><span class="p-num">Final</span><div class="p-txt"><strong>Valor Final IRRF:</strong><div class="p-valor-grande">R$ <span id="mFinalIrrf">0,00</span></div></div></div>
+                <div class="tabela-container">
+                    <h3 class="tabela-titulo">Tabela Progressiva IRRF 2026</h3>
+                    <table class="tabela-limpa">
+                        <thead><tr><th>Base</th><th style="text-align: center;">Alíq.</th><th style="text-align: right;">Dedução</th></tr></thead>
+                        <tbody>
+                            <tr id="irf1"><td>Até R$ 2.428,80</td><td style="text-align: center;">Isento</td><td style="text-align: right;">R$ 0,00</td></tr>
+                            <tr id="irf2"><td>R$ 2.428,81 a R$ 2.826,65</td><td style="text-align: center;">7,5%</td><td style="text-align: right;">R$ 182,16</td></tr>
+                            <tr id="irf3"><td>R$ 2.826,66 a R$ 3.751,05</td><td style="text-align: center;">15,0%</td><td style="text-align: right;">R$ 394,16</td></tr>
+                            <tr id="irf4"><td>R$ 3.751,06 a R$ 4.664,68</td><td style="text-align: center;">22,5%</td><td style="text-align: right;">R$ 675,49</td></tr>
+                            <tr id="irf5"><td>Acima de R$ 4.664,68</td><td style="text-align: center;">27,5%</td><td style="text-align: right;">R$ 908,73</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalReverso" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="fecharModalReverso()">&times;</span>
+                <h2 class="modal-title">Cálculo Reverso</h2>
+                <div class="input-group-modal"><label>Qual o valor do desconto de INSS?</label><input type="number" id="descInssAlvo" placeholder="Ex: 250,00" step="0.01"></div>
+                <div class="result-box-modal"><p class="result-label">Salário Bruto que gera este desconto:</p><h1 id="brutoReversoResultado" class="result-value">R$ 0,00</h1><span id="obsReverso" class="result-obs">Informe o valor acima</span></div>
+            </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
