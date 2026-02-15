@@ -193,7 +193,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     line-height: 1.4; 
     box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
     box-sizing: border-box; 
-    white-space: normal; /* Garante que o texto quebre linhas se necessário */
+    white-space: normal; 
 }
 .tooltiptext::after { 
     content: ""; 

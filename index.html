@@ -24,9 +24,35 @@
 
         <div class="input-section">
             <div class="input-row">
-                <div class="input-group"><label>💰 Salário Bruto</label><input type="number" id="brutoInss" placeholder="0.00" step="0.01"></div>
-                <div class="input-group"><label>🚫 Verbas sem Incidência INSS</label><input type="number" id="semIncidenciaInss" placeholder="0.00" step="0.01"></div>
-                <div class="input-group"><label>📉 Verbas sem Incidência IRRF</label><input type="number" id="semIncidenciaIrrf" placeholder="0.00" step="0.01"></div>
+                <div class="input-group">
+                    <label>
+                        💰 Salário Bruto
+                        <span class="tooltip">?
+                            <span class="tooltiptext">Valor total dos vencimentos registrados no contracheque.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="brutoInss" placeholder="0.00" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label>
+                        🚫 Verbas sem Incidência INSS
+                        <span class="tooltip">?
+                            <span class="tooltiptext">Refere-se aos proventos sem a 'base de verba' de INSS e os descontos que possuem a 'base de verba' configurada como DESCONTO_BASE_INSS.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="semIncidenciaInss" placeholder="0.00" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label>
+                        📉 Verbas sem Incidência IRRF
+                        <span class="tooltip">?
+                            <span class="tooltiptext">Refere-se aos proventos sem a 'base de verba' de IRRF e os descontos que possuem a 'base de verba' configurada como DESCONTO_BASE_IRRF.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="semIncidenciaIrrf" placeholder="0.00" step="0.01">
+                </div>
                 
                 <div class="input-group">
                     <label>
@@ -44,7 +70,16 @@
                     </div>
                 </div>
 
-                <div class="input-group"><label>👥 Dependentes</label><input type="number" id="dependentes" placeholder="0" step="1"></div>
+                <div class="input-group">
+                    <label>
+                        👥 Dependentes
+                        <span class="tooltip">?
+                            <span class="tooltiptext">Quantidade de dependentes para fins de dedução de impostos, exceto aqueles vinculados exclusivamente ao pagamento de pensão alimentícia.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="dependentes" placeholder="0" step="1">
+                </div>
+
                 <div class="input-group">
                     <label>
                         ⚖️ Valor pensão 
@@ -54,7 +89,16 @@
                     </label>
                     <input type="number" id="pensaoAlimenticia" placeholder="0.00" step="0.01">
                 </div>
-                <div class="input-group"><label>💸 Outros Desccontos</label><input type="number" id="outrosDescontos" placeholder="0.00" step="0.01"></div>
+
+                <div class="input-group">
+                    <label>
+                        💸 Outros Descontos
+                        <span class="tooltip">?
+                            <span class="tooltiptext">Refere-se aos demais débitos realizados em folha, tais como plano de saúde, contribuição sindical, vale-transporte, entre outros.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="outrosDescontos" placeholder="0.00" step="0.01">
+                </div>
             </div>
         </div>
 
@@ -142,8 +186,8 @@
             <div class="modal-content">
                 <span class="close-btn" onclick="fecharModalReverso()">&times;</span>
                 <h2 class="modal-title">Cálculo Reverso</h2>
-                <div class="input-group-modal"><label>Qual o valor do desconto de INSS?</label><input type="number" id="descInssAlvo" placeholder="Ex: 250,00" step="0.01"></div>
-                <div class="result-box-modal"><p class="result-label">Salário Bruto que gera este desconto:</p><h1 id="brutoReversoResultado" class="result-value">R$ 0,00</h1><span id="obsReverso" class="result-obs">Informe o valor acima</span></div>
+                <div class="input-group-modal"><label>Qual o valor do INSS do outro vinculo?</label><input type="number" id="descInssAlvo" placeholder="Ex: 250,00" step="0.01"></div>
+                <div class="result-box-modal"><p class="result-label">Salário Bruto que gera este desconto:</p><h1 id="brutoReversoResultado" class="result-value">R$ 0,00</h1></div>
             </div>
         </div>
 
