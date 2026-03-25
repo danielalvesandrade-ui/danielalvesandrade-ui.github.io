@@ -34,7 +34,9 @@ function alternarTela() {
 }
 
 function calcularReversoINSS() {
-    const descontoAlvo = parseFloat(this.value) || 0;
+    const valorDigitado = parseFloat(this.value) || 0;
+    const tetoInss = 988.07;
+    const descontoAlvo = Math.max(0, tetoInss - valorDigitado);
     const sInss = parseFloat(document.getElementById('semIncidenciaInss').value) || 0;
     let bruto = 0, obs = "Informe o valor acima";
     if (descontoAlvo > 0) {
